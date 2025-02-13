@@ -11,6 +11,7 @@ app.use(cors());
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 
+
 // Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/upload', require('./routes/upload'));
@@ -23,8 +24,9 @@ mongoose.connect(process.env.MONGO_URI)
 
 // Upload klasörünü oluştur
 const fs = require('fs');
-if (!fs.existsSync('uploads')) {
-  fs.mkdirSync('uploads');
+const uploadDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir);
 }
 
 const PORT = process.env.PORT || 5000;

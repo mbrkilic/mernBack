@@ -30,7 +30,12 @@ router.delete('/:id', authenticate, async (req, res) => {
 
     // Dosyayı fiziksel olarak sil
     const filePath = path.join(__dirname, '..', image.filePath);
-    await fs.unlink(filePath);
+    try {
+      await fs.unlink(filePath);
+    } catch (unlinkError) {
+      console.error('File delete error:', unlinkError);
+      // Dosya zaten silinmiş olabilir, devam et
+    }
 
     // Veritabanından sil
     await Image.findByIdAndDelete(req.params.id);

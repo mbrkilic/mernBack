@@ -40,9 +40,12 @@ router.post('/', authenticate, upload.single('image'), async (req, res) => {
       });
     }
 
+    // Dosya yolunu düzelt
+    const filePath = `uploads/${req.file.filename}`;
+
     const newImage = new Image({
       filename: req.file.filename,
-      filePath: req.file.path,
+      filePath: filePath,  // Değiştirildi
       uploadedBy: req.user.username
     });
 
