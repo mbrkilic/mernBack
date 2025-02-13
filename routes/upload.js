@@ -5,6 +5,9 @@ const Image = require('../models/Image');
 const authenticate = require('../middleware/auth'); // Kimlik doğrulama middleware'i
 const router = express.Router();
 
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, 'uploads/');
@@ -29,6 +32,7 @@ const upload = multer({
     cb(new Error('Only image files are allowed!'));
   }
 });
+
 
 // Upload rotasına kimlik doğrulama middleware'i ekleyin
 router.post('/', authenticate, upload.single('image'), async (req, res) => {
