@@ -5,9 +5,6 @@ const Image = require('../models/Image');
 const authenticate = require('../middleware/auth'); // Kimlik doğrulama middleware'i
 const router = express.Router();
 
-
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, 'uploads/');
@@ -18,11 +15,13 @@ const storage = multer.diskStorage({
   }
 });
 
+
+
 const upload = multer({ 
   storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+ // limits: { fileSize: 5 * 4096 * 4096 }, // 5MB limit
   fileFilter: (req, file, cb) => {
-    const allowedTypes = /jpeg|jpg|png|gif/;
+    const allowedTypes = /jpeg|jpg|png|gif|webp/;
     const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
     const mimetype = allowedTypes.test(file.mimetype);
 
@@ -32,7 +31,6 @@ const upload = multer({
     cb(new Error('Only image files are allowed!'));
   }
 });
-
 
 // Upload rotasına kimlik doğrulama middleware'i ekleyin
 router.post('/', authenticate, upload.single('image'), async (req, res) => {
@@ -44,12 +42,9 @@ router.post('/', authenticate, upload.single('image'), async (req, res) => {
       });
     }
 
-    // Dosya yolunu düzelt
-    const filePath = `uploads/${req.file.filename}`;
-
     const newImage = new Image({
       filename: req.file.filename,
-      filePath: filePath,  // Değiştirildi
+      filePath: req.file.path,
       uploadedBy: req.user.username
     });
 
@@ -69,4 +64,7 @@ router.post('/', authenticate, upload.single('image'), async (req, res) => {
   }
 });
 
+module.exports = (app) => {
+  app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+};
 module.exports = router;
